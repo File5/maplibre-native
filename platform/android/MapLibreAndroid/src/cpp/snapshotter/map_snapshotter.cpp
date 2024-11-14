@@ -113,6 +113,42 @@ void MapSnapshotter::start(JNIEnv& env) {
     });
 }
 
+void MapSnapshotter::startBitmap(JNIEnv& env, const jni::Object<Bitmap>& bitmap) {
+    MBGL_VERIFY_THREAD(tid);
+    activateFilesource(env);
+    snapshotter->snapshot([this, &bitmap](std::exception_ptr err,
+                                 PremultipliedImage image,
+                                 std::vector<std::string> attributions,
+                                 mbgl::MapSnapshotter::PointForFn pointForFn,
+                                 mbgl::MapSnapshotter::LatLngForFn latLngForFn) {
+        MBGL_VERIFY_THREAD(tid);
+        android::UniqueEnv _env = android::AttachEnv();
+        static auto& javaClass = jni::Class<MapSnapshotter>::Singleton(*_env);
+
+        if (err) {
+            // error handler callback
+            static auto onSnapshotFailed = javaClass.GetMethod<void(jni::String)>(*_env, "onSnapshotFailed");
+            auto weakReference = javaPeer.get(*_env);
+            if (weakReference) {
+                weakReference.Call(*_env, onSnapshotFailed, jni::Make<jni::String>(*_env, util::toString(err)));
+            }
+        } else {
+            // Create the wrapper
+            auto mapSnapshot = android::MapSnapshot::NewWithBitmap(
+                *_env, std::move(image), pixelRatio, attributions, showLogo, pointForFn, latLngForFn, bitmap);
+
+            // invoke callback
+            static auto onSnapshotReady = javaClass.GetMethod<void(jni::Object<MapSnapshot>)>(*_env, "onSnapshotReady");
+            auto weakReference = javaPeer.get(*_env);
+            if (weakReference) {
+                weakReference.Call(*_env, onSnapshotReady, mapSnapshot);
+            }
+        }
+
+        deactivateFilesource(*_env);
+    });
+}
+
 void MapSnapshotter::cancel(JNIEnv& env) {
     MBGL_VERIFY_THREAD(tid);
     snapshotter->cancel();
@@ -353,6 +389,7 @@ void MapSnapshotter::registerNative(jni::JNIEnv& env) {
                                             METHOD(&MapSnapshotter::setCameraPosition, "setCameraPosition"),
                                             METHOD(&MapSnapshotter::setRegion, "setRegion"),
                                             METHOD(&MapSnapshotter::start, "nativeStart"),
+                                            METHOD(&MapSnapshotter::startBitmap, "nativeStartBitmap"),
                                             METHOD(&MapSnapshotter::cancel, "nativeCancel"),
                                             METHOD(&MapSnapshotter::getTestNumber, "nativeGetTestNumber"));
 }

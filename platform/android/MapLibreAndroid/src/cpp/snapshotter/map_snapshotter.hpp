@@ -13,6 +13,7 @@
 #include "../map/image.hpp"
 #include "../style/layers/layer.hpp"
 #include "../style/sources/source.hpp"
+#include "bitmap.hpp"
 
 namespace mbgl {
 namespace android {
@@ -49,6 +50,8 @@ public:
     void setRegion(JNIEnv&, const jni::Object<LatLngBounds>& region);
 
     void start(JNIEnv&);
+
+    void startBitmap(JNIEnv&, const jni::Object<Bitmap>&);
 
     void cancel(JNIEnv&);
 

@@ -37,6 +37,7 @@ public:
                                                         Config::Value config) {
         return CreateBitmap(env, width, height, Config::Create(env, config));
     }
+    static void CopyToBitmapFromImage(jni::JNIEnv&, const jni::Object<Bitmap>&, const PremultipliedImage&);
 
     static PremultipliedImage GetImage(jni::JNIEnv&, const jni::Object<Bitmap>&);
     static jni::Local<jni::Object<Bitmap>> CreateBitmap(jni::JNIEnv&, const PremultipliedImage&);

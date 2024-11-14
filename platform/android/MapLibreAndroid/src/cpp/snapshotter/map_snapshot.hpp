@@ -6,6 +6,7 @@
 
 #include "../geometry/lat_lng.hpp"
 #include "../graphics/pointf.hpp"
+#include "bitmap.hpp"
 
 #include <vector>
 #include <string>
@@ -30,7 +31,6 @@ public:
                                                     PointForFn pointForFn,
                                                     LatLngForFn latLngForFn);
 
-    /*
     static jni::Local<jni::Object<MapSnapshot>> NewWithBitmap(JNIEnv& env,
                                                     PremultipliedImage&& image,
                                                     float pixelRatio,
@@ -38,8 +38,7 @@ public:
                                                     bool showLogo,
                                                     PointForFn pointForFn,
                                                     LatLngForFn latLngForFn,
-                                                    Bitmap bitmap);
-    */
+                                                    const jni::Object<Bitmap>& bitmap);
 
     MapSnapshot(jni::JNIEnv&) {};
     MapSnapshot(float pixelRatio, PointForFn, LatLngForFn);

@@ -64,6 +64,27 @@ jni::Local<jni::Object<Bitmap>> Bitmap::CreateBitmap(jni::JNIEnv& env,
     return _class.Call(env, method, width, height, config);
 }
 
+void Bitmap::CopyToBitmapFromImage(jni::JNIEnv& env, const jni::Object<Bitmap>& bitmap, const PremultipliedImage& image) {
+    AndroidBitmapInfo info;
+    const int result = AndroidBitmap_getInfo(&env, jni::Unwrap(*bitmap), &info);
+    if (result != ANDROID_BITMAP_RESULT_SUCCESS) {
+        // TODO: more specific information
+        throw std::runtime_error("bitmap creation: couldn't get bitmap info");
+    }
+
+    assert(info.width == image.size.width);
+    assert(info.height == image.size.height);
+    assert(info.format == ANDROID_BITMAP_FORMAT_RGBA_8888);
+
+    PixelGuard guard(env, bitmap);
+
+    // Copy the PremultipliedImage into the Android Bitmap
+    for (uint32_t y = 0; y < image.size.height; y++) {
+        auto begin = image.data.get() + y * image.stride();
+        std::copy(begin, begin + image.stride(), guard.get() + y * info.stride);
+    }
+}
+
 PremultipliedImage Bitmap::GetImage(jni::JNIEnv& env, const jni::Object<Bitmap>& bitmap) {
     AndroidBitmapInfo info;
     const int result = AndroidBitmap_getInfo(&env, jni::Unwrap(*bitmap), &info);

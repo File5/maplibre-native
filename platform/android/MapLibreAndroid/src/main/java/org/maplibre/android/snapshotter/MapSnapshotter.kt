@@ -44,6 +44,7 @@ open class MapSnapshotter(context: Context, options: Options) {
     private var fullyLoaded = false
     private val options: Options
     private var callback: SnapshotReadyCallback? = null
+    private var bitmap: Bitmap? = null
     private var errorHandler: ErrorHandler? = null
     private var observer: Observer? = null
 
@@ -353,7 +354,18 @@ open class MapSnapshotter(context: Context, options: Options) {
         checkThread()
         this.callback = callback
         this.errorHandler = errorHandler
+        this.bitmap = null
         nativeStart()
+    }
+
+    @JvmOverloads
+    fun start(bitmap: Bitmap, callback: SnapshotReadyCallback, errorHandler: ErrorHandler? = null) {
+        check(this.callback == null) { "Snapshotter was already started" }
+        checkThread()
+        this.callback = callback
+        this.errorHandler = errorHandler
+        this.bitmap = bitmap
+        nativeStartBitmap(bitmap)
     }
 
     /**
@@ -738,6 +750,9 @@ open class MapSnapshotter(context: Context, options: Options) {
 
     @Keep
     protected external fun nativeStart()
+
+    @Keep
+    protected external fun nativeStartBitmap(bitmap: Bitmap)
 
     @Keep
     protected external fun nativeCancel()

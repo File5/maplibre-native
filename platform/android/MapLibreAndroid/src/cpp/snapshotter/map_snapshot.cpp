@@ -1,6 +1,5 @@
 #include "map_snapshot.hpp"
 
-#include "bitmap.hpp"
 #include "../conversion/collection.hpp"
 
 #include <memory>
@@ -49,7 +48,6 @@ jni::Local<jni::Object<MapSnapshot>> MapSnapshot::New(JNIEnv& env,
                          (jni::jboolean)showLogo);
 }
 
-/*
 jni::Local<jni::Object<MapSnapshot>> MapSnapshot::NewWithBitmap(JNIEnv& env,
                                                       PremultipliedImage&& image,
                                                       float pixelRatio,
@@ -57,9 +55,9 @@ jni::Local<jni::Object<MapSnapshot>> MapSnapshot::NewWithBitmap(JNIEnv& env,
                                                       bool showLogo,
                                                       mbgl::MapSnapshotter::PointForFn pointForFn,
                                                       mbgl::MapSnapshotter::LatLngForFn latLngForFn,
-                                                      Bitmap bitmap) {
-    // Create the bitmap
-    auto bitmap = Bitmap::CreateBitmap(env, std::move(image));
+                                                      const jni::Object<Bitmap>& bitmap) {
+    // Copy to the existing bitmap
+    Bitmap::CopyToBitmapFromImage(env, bitmap, std::move(image));
 
     // Create the Mapsnapshot peers
     static auto& javaClass = jni::Class<MapSnapshot>::Singleton(env);
@@ -73,7 +71,6 @@ jni::Local<jni::Object<MapSnapshot>> MapSnapshot::NewWithBitmap(JNIEnv& env,
                          conversion::toArray(env, attributions),
                          (jni::jboolean)showLogo);
 }
-*/
 
 void MapSnapshot::registerNative(jni::JNIEnv& env) {
     // Lookup the class

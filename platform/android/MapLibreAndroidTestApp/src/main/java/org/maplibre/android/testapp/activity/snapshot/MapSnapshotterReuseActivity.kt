@@ -1,5 +1,6 @@
 package org.maplibre.android.testapp.activity.snapshot
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -22,6 +23,7 @@ class MapSnapshotterReuseActivity : AppCompatActivity(), MapSnapshotter.Snapshot
     private var mapSnapshotter: MapSnapshotter? = null
     private lateinit var fab: View
     private var start = 0L
+    private var bitmap: Bitmap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map_snapshotter_reuse)
@@ -55,13 +57,19 @@ class MapSnapshotterReuseActivity : AppCompatActivity(), MapSnapshotter.Snapshot
         )
         //val number = mapSnapshotter!!.getTestNumber()
         //Toast.makeText(this, "Number: $number", Toast.LENGTH_SHORT).show()
-        mapSnapshotter!!.start(this@MapSnapshotterReuseActivity)
+        val bitmap = bitmap
+        if (bitmap == null) {
+            mapSnapshotter!!.start(this@MapSnapshotterReuseActivity)
+        } else {
+            mapSnapshotter!!.start(bitmap, this@MapSnapshotterReuseActivity)
+        }
     }
 
     override fun onSnapshotReady(snapshot: MapSnapshot) {
         val elapsed = System.currentTimeMillis() - start
         fab!!.visibility = View.VISIBLE
         val imageView = findViewById<ImageView>(R.id.snapshot_image)
+        bitmap = snapshot.bitmap
         imageView.setImageBitmap(snapshot.bitmap)
         Toast.makeText(this, "$elapsed ms", Toast.LENGTH_SHORT).show()
     }
