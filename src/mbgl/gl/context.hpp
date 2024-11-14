@@ -164,6 +164,9 @@ private:
     RendererBackend& backend;
     bool cleanupOnDestruction = true;
 
+    std::shared_ptr<uint8_t[]> stillFramebuffer;
+    size_t stillFramebufferSize = 0;
+
     std::unique_ptr<extension::Debugging> debugging;
 #if MLN_DRAWABLE_RENDERER
     std::shared_ptr<gl::Fence> frameInFlightFence;
@@ -225,7 +228,7 @@ private:
     std::unique_ptr<gfx::DrawScopeResource> createDrawScopeResource() override;
 
     UniqueFramebuffer createFramebuffer();
-    std::unique_ptr<uint8_t[]> readFramebuffer(Size, gfx::TexturePixelType, bool flip);
+    std::shared_ptr<uint8_t[]> readFramebuffer(Size, gfx::TexturePixelType, bool flip);
 
 public:
     VertexArray createVertexArray();

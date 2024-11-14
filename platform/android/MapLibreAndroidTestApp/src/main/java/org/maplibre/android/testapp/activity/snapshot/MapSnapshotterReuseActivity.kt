@@ -3,6 +3,7 @@ package org.maplibre.android.testapp.activity.snapshot
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
@@ -20,6 +21,7 @@ import java.util.*
 class MapSnapshotterReuseActivity : AppCompatActivity(), MapSnapshotter.SnapshotReadyCallback {
     private var mapSnapshotter: MapSnapshotter? = null
     private lateinit var fab: View
+    private var start = 0L
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map_snapshotter_reuse)
@@ -39,6 +41,7 @@ class MapSnapshotterReuseActivity : AppCompatActivity(), MapSnapshotter.Snapshot
                 } else {
                     mapSnapshotter!!.setSize(256, 256)
                 }
+                start = System.currentTimeMillis()
                 mapSnapshotter!!.start(this@MapSnapshotterReuseActivity)
             }
         )
@@ -50,13 +53,17 @@ class MapSnapshotterReuseActivity : AppCompatActivity(), MapSnapshotter.Snapshot
                 )
             )
         )
+        //val number = mapSnapshotter!!.getTestNumber()
+        //Toast.makeText(this, "Number: $number", Toast.LENGTH_SHORT).show()
         mapSnapshotter!!.start(this@MapSnapshotterReuseActivity)
     }
 
     override fun onSnapshotReady(snapshot: MapSnapshot) {
+        val elapsed = System.currentTimeMillis() - start
         fab!!.visibility = View.VISIBLE
         val imageView = findViewById<ImageView>(R.id.snapshot_image)
         imageView.setImageBitmap(snapshot.bitmap)
+        Toast.makeText(this, "$elapsed ms", Toast.LENGTH_SHORT).show()
     }
 
     private val randomBounds: LatLngBounds

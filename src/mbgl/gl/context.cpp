@@ -344,14 +344,22 @@ std::unique_ptr<gfx::RenderbufferResource> Context::createRenderbufferResource(c
     return std::make_unique<gl::RenderbufferResource>(std::move(renderbuffer));
 }
 
-std::unique_ptr<uint8_t[]> Context::readFramebuffer(const Size size,
+std::shared_ptr<uint8_t[]> Context::readFramebuffer(const Size size,
                                                     const gfx::TexturePixelType format,
                                                     const bool flip) {
     MLN_TRACE_FUNC();
     MLN_TRACE_FUNC_GL();
 
     const size_t stride = size.width * (format == gfx::TexturePixelType::RGBA ? 4 : 1);
-    auto data = std::make_unique<uint8_t[]>(stride * size.height);
+
+    size_t newSize = stride * size.height;
+    if (stillFramebuffer == nullptr) {
+        stillFramebuffer = std::make_shared<uint8_t[]>(newSize);
+
+    } else if (newSize > stillFramebufferSize) {
+        stillFramebuffer = std::make_shared<uint8_t[]>(newSize);
+    }
+    auto data = stillFramebuffer;
 
     // When reading data from the framebuffer, make sure that we are storing the
     // values tightly packed into the buffer to avoid buffer overruns.

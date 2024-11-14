@@ -69,6 +69,7 @@ public:
     using Callback = std::function<void(std::exception_ptr, PremultipliedImage, Attributions, PointForFn, LatLngForFn)>;
     void snapshot(Callback);
     void cancel();
+    int getTestNumber();
 
 private:
     class Impl;

@@ -49,6 +49,32 @@ jni::Local<jni::Object<MapSnapshot>> MapSnapshot::New(JNIEnv& env,
                          (jni::jboolean)showLogo);
 }
 
+/*
+jni::Local<jni::Object<MapSnapshot>> MapSnapshot::NewWithBitmap(JNIEnv& env,
+                                                      PremultipliedImage&& image,
+                                                      float pixelRatio,
+                                                      std::vector<std::string> attributions,
+                                                      bool showLogo,
+                                                      mbgl::MapSnapshotter::PointForFn pointForFn,
+                                                      mbgl::MapSnapshotter::LatLngForFn latLngForFn,
+                                                      Bitmap bitmap) {
+    // Create the bitmap
+    auto bitmap = Bitmap::CreateBitmap(env, std::move(image));
+
+    // Create the Mapsnapshot peers
+    static auto& javaClass = jni::Class<MapSnapshot>::Singleton(env);
+    static auto constructor =
+        javaClass.GetConstructor<jni::jlong, jni::Object<Bitmap>, jni::Array<jni::String>, jni::jboolean>(env);
+    auto nativePeer = std::make_unique<MapSnapshot>(pixelRatio, pointForFn, latLngForFn);
+    return javaClass.New(env,
+                         constructor,
+                         reinterpret_cast<jlong>(nativePeer.release()),
+                         bitmap,
+                         conversion::toArray(env, attributions),
+                         (jni::jboolean)showLogo);
+}
+*/
+
 void MapSnapshot::registerNative(jni::JNIEnv& env) {
     // Lookup the class
     static auto& javaClass = jni::Class<MapSnapshot>::Singleton(env);

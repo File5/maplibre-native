@@ -30,6 +30,17 @@ public:
                                                     PointForFn pointForFn,
                                                     LatLngForFn latLngForFn);
 
+    /*
+    static jni::Local<jni::Object<MapSnapshot>> NewWithBitmap(JNIEnv& env,
+                                                    PremultipliedImage&& image,
+                                                    float pixelRatio,
+                                                    std::vector<std::string> attributions,
+                                                    bool showLogo,
+                                                    PointForFn pointForFn,
+                                                    LatLngForFn latLngForFn,
+                                                    Bitmap bitmap);
+    */
+
     MapSnapshot(jni::JNIEnv&) {};
     MapSnapshot(float pixelRatio, PointForFn, LatLngForFn);
     ~MapSnapshot();

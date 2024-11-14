@@ -347,4 +347,8 @@ void MapSnapshotter::cancel() {
     impl->cancel();
 }
 
+int MapSnapshotter::getTestNumber() {
+    return 19970108;
+}
+
 } // namespace mbgl

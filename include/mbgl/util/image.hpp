@@ -42,6 +42,10 @@ public:
         : size(size_),
           data(std::move(data_)) {}
 
+    Image(Size size_, std::shared_ptr<uint8_t[]> data_)
+        : size(size_),
+          data(data_) {}
+
     Image(Image&& o) noexcept
         : size(o.size),
           data(std::move(o.data)) {
@@ -164,7 +168,7 @@ public:
 
     Size size;
     static constexpr size_t channels = Mode == ImageAlphaMode::Exclusive ? 1 : 4;
-    std::unique_ptr<uint8_t[]> data;
+    std::shared_ptr<uint8_t[]> data;
 };
 
 using UnassociatedImage = Image<ImageAlphaMode::Unassociated>;

@@ -52,6 +52,8 @@ public:
 
     void cancel(JNIEnv&);
 
+    int getTestNumber(JNIEnv&);
+
     void addLayerAt(JNIEnv&, jlong, jni::jint);
     void addLayerBelow(JNIEnv&, jlong, const jni::String&);
     void addLayerAbove(JNIEnv&, jlong, const jni::String&);

@@ -458,6 +458,10 @@ open class MapSnapshotter(context: Context, options: Options) {
         nativeCancel()
     }
 
+    fun getTestNumber(): Int {
+        return nativeGetTestNumber()
+    }
+
     /**
      * Sets observer for a snapshotter
      *
@@ -737,6 +741,9 @@ open class MapSnapshotter(context: Context, options: Options) {
 
     @Keep
     protected external fun nativeCancel()
+
+    @Keep
+    external fun nativeGetTestNumber(): Int
 
     @Keep
     private external fun nativeAddLayerBelow(layerPtr: Long, below: String)
