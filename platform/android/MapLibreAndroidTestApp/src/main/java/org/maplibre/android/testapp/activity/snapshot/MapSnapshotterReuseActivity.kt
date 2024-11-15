@@ -38,13 +38,18 @@ class MapSnapshotterReuseActivity : AppCompatActivity(), MapSnapshotter.Snapshot
                 } else {
                     mapSnapshotter!!.setRegion(randomBounds)
                 }
-                if (random.nextInt(2) == 0) {
+                if (true) {
                     mapSnapshotter!!.setSize(512, 512)
                 } else {
                     mapSnapshotter!!.setSize(256, 256)
                 }
                 start = System.currentTimeMillis()
-                mapSnapshotter!!.start(this@MapSnapshotterReuseActivity)
+                val bitmap = bitmap
+                if (bitmap == null) {
+                    mapSnapshotter!!.start(this@MapSnapshotterReuseActivity)
+                } else {
+                    mapSnapshotter!!.start(bitmap, this@MapSnapshotterReuseActivity)
+                }
             }
         )
         mapSnapshotter = MapSnapshotter(
@@ -57,12 +62,7 @@ class MapSnapshotterReuseActivity : AppCompatActivity(), MapSnapshotter.Snapshot
         )
         //val number = mapSnapshotter!!.getTestNumber()
         //Toast.makeText(this, "Number: $number", Toast.LENGTH_SHORT).show()
-        val bitmap = bitmap
-        if (bitmap == null) {
-            mapSnapshotter!!.start(this@MapSnapshotterReuseActivity)
-        } else {
-            mapSnapshotter!!.start(bitmap, this@MapSnapshotterReuseActivity)
-        }
+        mapSnapshotter!!.start(this@MapSnapshotterReuseActivity)
     }
 
     override fun onSnapshotReady(snapshot: MapSnapshot) {
