@@ -2,7 +2,6 @@ import org.gradle.kotlin.dsl.get
 
 plugins {
     `maven-publish`
-    signing
     id("com.android.library")
     id("maplibre.artifact-settings")
     id("maplibre.publish-root")
@@ -92,8 +91,4 @@ afterEvaluate {
             }
         }
     }
-}
-
-signing {
-    sign(publishing.publications)
 }
