@@ -5,6 +5,7 @@
 #include <mbgl/style/style.hpp>
 #include <mbgl/util/logging.hpp>
 #include <mbgl/util/string.hpp>
+#include <android/bitmap.h>
 
 #include "attach_env.hpp"
 #include "../style/layers/layer_manager.hpp"
@@ -116,7 +117,22 @@ void MapSnapshotter::start(JNIEnv& env) {
 void MapSnapshotter::startBitmap(JNIEnv& env, const jni::Object<Bitmap>& bitmap) {
     MBGL_VERIFY_THREAD(tid);
     activateFilesource(env);
-    snapshotter->snapshot([this, &bitmap](std::exception_ptr err,
+
+    /*
+    AndroidBitmapInfo info;
+    const int result = AndroidBitmap_getInfo(&env, jni::Unwrap(*bitmap), &info);
+    if (result != ANDROID_BITMAP_RESULT_SUCCESS) {
+        // TODO: more specific information
+        throw std::runtime_error("bitmap creation: couldn't get bitmap info");
+    }
+
+    assert(info.format == ANDROID_BITMAP_FORMAT_RGBA_8888);
+    */
+
+    //auto globalBitmap = std::make_shared<jni::Global<jni::Object<Bitmap>>>(env, bitmap.get());
+    auto globalBitmap = env.NewGlobalRef(reinterpret_cast<jobject>(bitmap.get()));
+
+    snapshotter->snapshot([this, globalBitmap](std::exception_ptr err,
                                  PremultipliedImage image,
                                  std::vector<std::string> attributions,
                                  mbgl::MapSnapshotter::PointForFn pointForFn,
@@ -124,6 +140,19 @@ void MapSnapshotter::startBitmap(JNIEnv& env, const jni::Object<Bitmap>& bitmap)
         MBGL_VERIFY_THREAD(tid);
         android::UniqueEnv _env = android::AttachEnv();
         static auto& javaClass = jni::Class<MapSnapshotter>::Singleton(*_env);
+
+        jni::Global<jni::Object<Bitmap>> globalBitmap1(*_env, reinterpret_cast<jni::jobject *>(globalBitmap));
+
+        /*
+        AndroidBitmapInfo info;
+        const int result = AndroidBitmap_getInfo(&*_env, jni::Unwrap(*globalBitmap1), &info);
+        if (result != ANDROID_BITMAP_RESULT_SUCCESS) {
+            // TODO: more specific information
+            throw std::runtime_error("bitmap creation: couldn't get bitmap info");
+        }
+
+        assert(info.format == ANDROID_BITMAP_FORMAT_RGBA_8888);
+        //*/
 
         if (err) {
             // error handler callback
@@ -135,7 +164,7 @@ void MapSnapshotter::startBitmap(JNIEnv& env, const jni::Object<Bitmap>& bitmap)
         } else {
             // Create the wrapper
             auto mapSnapshot = android::MapSnapshot::NewWithBitmap(
-                *_env, std::move(image), pixelRatio, attributions, showLogo, pointForFn, latLngForFn, bitmap);
+                *_env, std::move(image), pixelRatio, attributions, showLogo, pointForFn, latLngForFn, globalBitmap1);
 
             // invoke callback
             static auto onSnapshotReady = javaClass.GetMethod<void(jni::Object<MapSnapshot>)>(*_env, "onSnapshotReady");
