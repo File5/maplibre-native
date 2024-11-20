@@ -33,7 +33,7 @@ class MapSnapshotterReuseActivity : AppCompatActivity(), MapSnapshotter.Snapshot
             View.OnClickListener { v: View? ->
                 fab.setVisibility(View.INVISIBLE)
                 mapSnapshotter!!.setStyleUrl(randomStyle)
-                if (random.nextInt(2) == 0) {
+                if (true) {
                     mapSnapshotter!!.setCameraPosition(randomCameraPosition)
                 } else {
                     mapSnapshotter!!.setRegion(randomBounds)
@@ -95,13 +95,12 @@ class MapSnapshotterReuseActivity : AppCompatActivity(), MapSnapshotter.Snapshot
         private get() = CameraPosition.Builder()
             .target(
                 LatLng(
-                    randomInRange(-80f, 80f).toDouble(),
-                    randomInRange(-160f, 160f)
-                        .toDouble()
+                    40.0,
+                    8.0
                 )
             )
-            .zoom(randomInRange(2f, 10f).toDouble())
-            .bearing(randomInRange(0f, 90f).toDouble())
+            .zoom(3.0)
+            .bearing(0.0)
             .build()
     val randomStyle: String
         get() = when (random.nextInt(5)) {
